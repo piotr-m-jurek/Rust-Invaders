@@ -1,0 +1,6 @@
+[package]
+name = "rust-invaders"
+version = "0.1.0"
+authors = ["Piotr Małecki-Jurek <piotr.m.jurek@gmail.com>"]
+
+[dependencies]
