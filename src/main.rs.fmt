@@ -1,0 +1,55 @@
+mod utils;
+
+use std::fs;
+use std::io::{self, Read};
+use std::path::Path;
+use std::env;
+use utils::format_size;
+
+
+fn main() {
+    let mut args = env::args();
+    let filename = args.nth(1).unwrap();
+    println!("\n Filename: {}", filename);
+    let rom = Rom::new_from_bin(&filename).unwrap();
+    // for byte in rom.bytes.iter() {
+    //     println!("{:04X}", byte);
+    // }
+    println!("ROM size {}", format_size(rom.size()));
+    println!("ROM name {}", rom.game_title());
+    println!("Super GameBoy {}", rom.is_super_gameboy());
+
+}
+
+
+struct Rom {
+    bytes: Box<[u8]>
+}
+
+impl Rom {
+
+    fn new_from_bin<P: AsRef<Path>>(path: P) -> io::Result<Rom> {
+        //read provided file
+        let mut file = fs::File::open(path)?;
+        let mut file_buff = Vec::new();
+
+        file.read_to_end(&mut file_buff)?;
+        // TODO: Make sure the rom is valid
+        Ok(Rom { bytes: file_buff.into_boxed_slice() })
+
+    }
+    fn size (&self) -> u32 {
+        self.bytes.len() as _
+    }
+    
+    fn game_title (&self) -> String {
+        String::from_utf8_lossy(&self.bytes[0x0134..0x0142]).into_owned()
+    }
+
+    fn is_super_gameboy (&self) -> bool {
+        self.bytes[0x0146] == 0x03
+    }
+    fn cardrige_type (&self) -> {
+        self.bytes[0147]
+    }
+}
